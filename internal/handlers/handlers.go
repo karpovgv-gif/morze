@@ -18,7 +18,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, "C:\\Users\\Grigoriy\\package1\\morze\\index.html")
+	http.ServeFile(w, r, "../index.html")
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
