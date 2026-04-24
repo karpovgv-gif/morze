@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,6 +17,12 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Метод не разрешен", http.StatusMethodNotAllowed)
 		return
 	}
+
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	http.ServeFile(w, r, "../index.html")
 }
 
@@ -46,21 +52,34 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	input := string(data)
 
 	result, err := service.Convert(input)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Write([]byte(result))
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	currentTime := time.Now().UTC().String()
+	currentTime := time.Now().UTC().Format("2006-01-02_15-04-05")
 
-	safeName := strings.ReplaceAll(currentTime, " ", "_")
-
-	safeName = strings.ReplaceAll(safeName, ":", "-")
 	filename := fileHeader.Filename
-	ext := filepath.Ext(filename) // ".txt"
-	newFilename := "converted_" + strings.ReplaceAll(filename, ext, "") + "_morse" + ext
+	if filename == "" {
+		filename = "file"
+	}
+	ext := filepath.Ext(filename)
+	if ext == "" {
+		ext = ".txt"
+	}
+
+	// base без расширения
+	base := strings.TrimSuffix(filename, ext)
+
+	// если надо — можно добавить префикс "converted_"
+	newFilename := fmt.Sprintf("%s_%s%s", base, currentTime, ".txt")
 
 	if err := os.WriteFile(newFilename, []byte(result), 0666); err != nil {
-		log.Fatal(err)
+		// log.Fatal(err) — не здесь!
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }

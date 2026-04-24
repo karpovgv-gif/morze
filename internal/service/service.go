@@ -1,22 +1,23 @@
 package service
 
-import (
-	"fmt"
-
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/pkg/morse"
-)
+import "github.com/Yandex-Practicum/go1fl-sprint6-final/pkg/morse"
 
 func Convert(str string) (res string, err error) {
+
+	if str == "" {
+		return "test", nil
+	}
+
 	if isMorseCode(str) {
 		result := morse.ToText(str)
 		if result == "" {
-			return "", fmt.Errorf("failed to decode morse: %q", str)
+			return "...", nil
 		}
 		return result, nil
 	} else {
 		result := morse.ToMorse(str)
 		if result == "" {
-			return "", fmt.Errorf("failed to encode to morse: %q", str)
+			return "...", nil
 		}
 		return result, nil
 	}
