@@ -13,10 +13,18 @@ import (
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Метод не разрешен", http.StatusMethodNotAllowed)
+		return
+	}
 	http.ServeFile(w, r, "../index.html")
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Метод не разрешен", http.StatusMethodNotAllowed)
+		return
+	}
 	err := r.ParseMultipartForm(32 << 20)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -13,7 +13,7 @@ func main() {
 
 	// создаём сервер, передавая ему логгер
 	srv := server.NewServer(logger)
-
+	http.ListenAndServe(":8080", srv.Server.Handler)
 	// запускаем сервер
 	log.Println("starting server on :8080")
 	if err := srv.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
