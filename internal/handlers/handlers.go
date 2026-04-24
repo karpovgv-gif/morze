@@ -23,7 +23,23 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, "../index.html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	w.Write([]byte(`
+<html>
+<head>
+    <title>Морзе</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Загрузите файл</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="myFile" />
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
+`))
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +68,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	input := string(data)
 
 	result, err := service.Convert(input)
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Write([]byte(result))
 
 	if err != nil {
